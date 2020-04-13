@@ -5,9 +5,9 @@ import os
 
 def draw_boxes(I, bounding_boxes):
     # iterate through all boxes
-    for box in bounding_boxes:
+    for [tl_row, tl_col, br_row, br_col] in bounding_boxes:
         draw = ImageDraw.Draw(I)
-        draw.rectangle(box, outline=(36, 248, 229))
+        draw.rectangle([tl_col, tl_row, br_col, br_row], outline=(36, 248, 229))
         del draw
     return I
 
@@ -36,6 +36,11 @@ def main():
 
         I = draw_boxes(I, bounding_boxes[file_names[i]])
         I.save(os.path.join(preds_path,file_names[i]))
+        # hi = 'RL-002.jpg'
+        # I = Image.open(os.path.join(data_path,hi))
+        #
+        # I = draw_boxes(I, bounding_boxes[hi])
+        # I.save(os.path.join(preds_path,hi))
     return
 
 if __name__ == '__main__':
