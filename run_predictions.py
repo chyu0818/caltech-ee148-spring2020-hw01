@@ -4,7 +4,7 @@ import numpy as np
 import json
 from PIL import Image, ImageDraw
 
-THRESHOLD = 0.85
+THRESHOLD = 0.92
 # set the path to the downloaded data:
 data_path = '../data/RedLights2011_Medium'
 
@@ -16,9 +16,11 @@ def find_red_light_info(red_light, is_small, mult):
     (height, width, n_chanels) = np.shape(red_light_arr)
     red_light_flat = np.reshape(red_light_arr, np.size(red_light_arr))
     #(left, top, right, bottom)
-    center = [26, 14, 26, 58]
+    # center = [26, 14, 26, 58]
+    center = [4, 6, 4, 6]
     if is_small:
-        center = [15, 17, 15, 53]
+        # center = [15, 17, 15, 53]
+        center = [4, 4, 4, 4]
     center = [int(np.ceil(mult*x)) for x in center]
     center[2] = width - center[0]
     center[3] = height - center[1]
@@ -30,14 +32,16 @@ def find_red_light_info(red_light, is_small, mult):
 
 def find_target_red_light():
     red_light_lst = []
-    fn = 'RL-010.jpg'
+    fn = 'RL-001.jpg'
     img = Image.open(os.path.join(data_path, fn))
 
     # high
     # (left, top, right, bottom) = (314, 152, 324, 162) outlined square
     # no outline square (315, 154, 323, 162)
     # 335, 41
-    (left, top, right, bottom) = (320, 24, 350, 94)
+    # (left, top, right, bottom) = (320, 24, 350, 94)
+    # (left, top, right, bottom) = (314, 152, 324, 162)
+    (left, top, right, bottom) = (315, 154, 323, 162)
     (width, height) = (right-left, bottom-top)
     red_light = img.crop((left, top, right, bottom))
     red_light.save('red_light_high.jpg')
@@ -49,14 +53,15 @@ def find_target_red_light():
     # no outline square (418, 190, 428, 200) width 10, height 30
     # 147, 28
     # (left1, top1, right1, bottom1) = (121, 14, 173, 86)
+    # (left1, top1, right1, bottom1) = (417, 189, 429, 201)
     # (width1, height1) = (right1-left1, bottom1-top1)
     # red_light1 = img.crop((left1, top1, right1, bottom1))
     # red_light1.save('red_light_low.jpg')
     # red_light_lst.append(find_red_light_info(red_light1, False, 1))
     # print(red_light1.size)
 
-    # mults = [1.4, 2, 2.4, 3]
-    mults = [0.2, 0.35, 0.5, 0.7, 1]
+    mults = [1.5, 2, 2.5, 3, 3.5]
+    # mults = [0.2, 0.3, 0.5, 0.7, 1]
     for m in mults:
         red_light_img = red_light.resize((int(m*width), int(m*height)))
         red_light_img.save('red_light_high' + str(m) + '.jpg')
@@ -182,8 +187,8 @@ file_names = [f for f in file_names if '.jpg' in f]
 red_light_lst = find_target_red_light()
 
 preds = {}
-# for i in range(len(file_names)):
-for i in range(10):
+for i in range(len(file_names)):
+# for i in range(0,10):
 
     # read image using PIL:
     I0 = Image.open(os.path.join(data_path,file_names[i]))

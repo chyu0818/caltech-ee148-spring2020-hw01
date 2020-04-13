@@ -28,8 +28,8 @@ def main():
     with open(os.path.join(preds_path,'preds.json')) as f:
         bounding_boxes = json.load(f)
 
-    # for i in range(len(file_names)):
-    for i in range(10):
+    for i in range(len(file_names)):
+    # for i in range(0,10):
 
         # read image using PIL:
         I = Image.open(os.path.join(data_path,file_names[i]))
