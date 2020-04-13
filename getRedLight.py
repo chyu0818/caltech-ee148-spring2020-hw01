@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw
 data_path = '../data/RedLights2011_Medium'
 
 # get red light image
-red_light_fn0 = 'RL-010.jpg'
+red_light_fn0 = 'RL-001.jpg'
 red_light_img0 = Image.open(os.path.join(data_path, red_light_fn0))
 # [tl_row, tl_col, br_row, br_col] = [153, 314, 162, 324]
 # red_light = np.asarray(red_light_img0)[tl_row:br_row+1,tl_col:br_col+1,:]
@@ -18,7 +18,7 @@ red_light_img0 = Image.open(os.path.join(data_path, red_light_fn0))
 
 # outlined rectangle (318, 24, 352, 95)
 # no outlined rectangle(320, 24, 350, 94)
-(left, top, right, bottom) = (320, 24, 350, 94)
+(left, top, right, bottom) = (315, 154, 323, 172)
 red_light_img = red_light_img0.crop((left, top, right, bottom))
 red_light_img.save('red_light.jpg')
 
