@@ -29,19 +29,13 @@ def main():
         bounding_boxes = json.load(f)
 
     # for i in range(len(file_names)):
-    for i in range(100):
-
+    for i in range(3):
         # read image using PIL:
         I = Image.open(os.path.join(data_path,file_names[i]))
-
+        # draw box and save
         I = draw_boxes(I, bounding_boxes[file_names[i]])
         I.save(os.path.join(preds_path,file_names[i]))
-        # hi = 'RL-002.jpg'
-        # I = Image.open(os.path.join(data_path,hi))
-        #
-        # I = draw_boxes(I, bounding_boxes[hi])
-        # I.save(os.path.join(preds_path,hi))
-    return
+    return 0
 
 if __name__ == '__main__':
     main()
