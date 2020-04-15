@@ -28,8 +28,11 @@ def main():
     with open(os.path.join(preds_path,'preds.json')) as f:
         bounding_boxes = json.load(f)
 
+    ex_good_4 = [92, 194, 268, 328, 10]
+    ex_bad_5 = [0, 119, 138, 148, 166]
+    # Uncomment for all files
     # for i in range(len(file_names)):
-    for i in range(3):
+    for i in (ex_good_4 + ex_bad_5):
         # read image using PIL:
         I = Image.open(os.path.join(data_path,file_names[i]))
         # draw box and save

@@ -39,16 +39,16 @@ def find_target_red_light(fn):
     img = Image.open(os.path.join(data_path, fn))
 
     # Find square red light.
-    (left, top, right, bottom) = (315, 154, 323, 162)
+    (left, top, right, bottom) = (316, 154, 323, 162)
     (width, height) = (right-left, bottom-top)
     red_light = img.crop((left, top, right, bottom))
-    red_light.save('red_light_high.jpg')
+    red_light.save('red_light.jpg')
 
     # Find full traffic light (rectangle).
-    (left_rec, top_rec, right_rec, bottom_rec) = (315, 154, 323, 172)
+    (left_rec, top_rec, right_rec, bottom_rec) = (316, 154, 323, 172)
     (width_rec, height_rec) = (right_rec-left_rec, bottom_rec-top_rec)
     red_light_rec = img.crop((left_rec, top_rec, right_rec, bottom_rec))
-    red_light_rec.save('red_light_high_full.jpg')
+    red_light_rec.save('red_light_rec.jpg')
 
     red_light_lst.append({'sq':find_red_light_info(red_light, 1),
                           'rec':find_red_light_info(red_light_rec, 1)})
@@ -59,10 +59,10 @@ def find_target_red_light(fn):
     for m in mults:
         # Resize images (sq and rec) and save for reference.
         red_light_img = red_light.resize((int(m*width), int(m*height)))
-        red_light_img.save('red_light_high' + str(m) + '.jpg')
+        red_light_img.save('red_light' + str(m) + '.jpg')
 
         red_light_img_rec = red_light_rec.resize((int(m*width_rec), int(m*height_rec)))
-        red_light_img_rec.save('red_light_high_rec' + str(m) + '.jpg')
+        red_light_img_rec.save('red_light_rec' + str(m) + '.jpg')
 
         red_light_lst.append({'sq':find_red_light_info(red_light_img, m),
                               'rec':find_red_light_info(red_light_img_rec, m)})
@@ -89,7 +89,7 @@ def find_similarity(r, c, I, red_light, max_fit):
         I_box = I[tl_row:br_row,tl_col:br_col,:]
         assert np.shape(I_box) == np.shape(red_light['img'])
 
-        # Flatten image within boudning box and find norm.
+        # Flatten image within bounding box and find norm.
         I_box_flatten = np.float32(np.reshape(I_box, np.size(I_box)))
         I_box_flatten_norm = np.linalg.norm(I_box_flatten)
 
@@ -169,19 +169,22 @@ def detect_red_light(I, red_light_lst):
         max_fit = THRESHOLD_SQ
         # Find which size of light best fits.
         for red_light in red_light_lst:
-            # Use perceptron method to find whether fits square img of red light.
-            sim = find_similarity(r, c, I, red_light['sq'], max_fit)
+            # Use perceptron method to find whether fits rectangular img of red light.
+            sim = find_similarity(r, c, I, red_light['rec'], THRESHOLD_REC)
 
-            # If there's a fit, confirm that it's a red light with full
-            # outline of traffic light.
-            if sim != None \
-            and find_similarity(r, c, I, red_light['rec'], THRESHOLD_REC) != None:
-                (max_fit, box) = sim
+            # If there's a fit, confirm that it's a red light with perceptron
+            # method again but with square red light.
+            if sim != None:
+                sim1 = find_similarity(r, c, I, red_light['sq'], max_fit)
+                if sim1 != None:
+                    box = sim[1]
+                    max_fit = sim1[0]
         if box != None:
             bounding_boxes_fits.append((box, max_fit))
 
     # Find local maxima of overlapping boxes.
     bounding_boxes = remove_overlaps(bounding_boxes_fits)
+    # get rid of the boxes that are not all the same size??
     for box in bounding_boxes:
         assert len(box) == 4
 
@@ -204,8 +207,7 @@ def main():
     red_light_lst = find_target_red_light(fn)
 
     preds = {}
-    # for i in range(len(file_names)):
-    for i in range(3):
+    for i in range(len(file_names)):
 
         # read image using PIL:
         I0 = Image.open(os.path.join(data_path,file_names[i]))
