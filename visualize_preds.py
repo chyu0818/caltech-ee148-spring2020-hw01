@@ -27,9 +27,9 @@ def main():
     # get predictions
     with open(os.path.join(preds_path,'preds.json')) as f:
         bounding_boxes = json.load(f)
-
-    ex_good_4 = [92, 194, 268, 328, 10]
-    ex_bad_5 = [0, 119, 138, 148, 166]
+        
+    ex_good_4 = [328, 92, 194, 49, 10]
+    ex_bad_5 = [0, 113, 148, 166, 42]
     # Uncomment for all files
     # for i in range(len(file_names)):
     for i in (ex_good_4 + ex_bad_5):
